@@ -1,0 +1,23 @@
+body {
+    margin: 0
+}
+
+/* REACT ROUTER LINK STYLING */
+
+a.rL {
+    color: inherit;
+    text-decoration: inherit;
+    box-sizing: inherit;
+}
+
+.appContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    background-color: #293742;
+}
+
+.bodyContainer {
+    display: grid;
+    grid-template-columns: 1fr;
+    padding: 200px;
+}
