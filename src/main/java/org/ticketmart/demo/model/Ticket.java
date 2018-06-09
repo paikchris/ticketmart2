@@ -13,22 +13,24 @@ public class Ticket {
     public String price;
     public String seatID;
     public boolean reserved;
+    public boolean hold;
 
     public Ticket() {
     }
 
-    public Ticket(String eventID, String userID, String price, String seatID, boolean reserved) {
+    public Ticket(String eventID, String userID, String price, String seatID, boolean reserved, boolean hold) {
         this.eventID = eventID;
         this.userID = userID;
         this.price = price;
         this.seatID = seatID;
         this.reserved = reserved;
+        this.hold = hold;
     }
 
     @Override
     public String toString() {
         return String.format(
                 "Ticket[id=%s, eventID='%s', date='%s', venueID='%s', seatID='%s', reserved='%s']",
-                id, eventID, userID, price, seatID, reserved);
+                id, eventID, userID, price, seatID, reserved, hold);
     }
 }

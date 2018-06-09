@@ -3,9 +3,11 @@ package org.ticketmart.demo.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.ticketmart.demo.model.*;
+import org.ticketmart.demo.model.repositories.EventRepository;
+import org.ticketmart.demo.model.repositories.SeatRepository;
+import org.ticketmart.demo.model.repositories.TicketRepository;
+import org.ticketmart.demo.model.repositories.VenueRepository;
 
-import javax.swing.text.html.Option;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 

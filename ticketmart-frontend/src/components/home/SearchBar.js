@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {InputGroup} from "@blueprintjs/core";
 import {Button} from "@blueprintjs/core/lib/cjs/components/button/buttons";
 import {Suggest} from "@blueprintjs/select/lib/cjs/components/select/suggest";
+import {MenuItem} from "@blueprintjs/core/lib/cjs/components/menu/menuItem";
+import * as FuzzySearch from "fuzzy-search";
+import * as TMUtils from "./../../utils/TMUtils.js"
 
 export class SearchBar extends React.Component {
     constructor(props) {
@@ -12,48 +15,104 @@ export class SearchBar extends React.Component {
         };
 
         this.itemRenderer = this.itemRenderer.bind(this);
-        this.itemValueRenderer = this.itemValueRenderer.bind(this);
-        this.onItemSelect = this.onItemSelect.bind(this);
-
+        this.inputValueRenderer = this.inputValueRenderer.bind(this);
+        this.searchOnChange = this.searchOnChange.bind(this);
+        this.itemListPredicate = this.itemListPredicate.bind(this);
+        this.getVenue = this.getVenue.bind(this);
 
     }
-    componentDidMount() {
-        fetch('http://localhost:8080')
+    componentDidMount(){
+        this.getEvents()
+    }
+
+    searchOnChange(event){
+        let value = event.currentTarget.value;
+        this.getEventResults(value)
+    }
+
+    itemListPredicate(query){
+        //TODO: ADD DATE SEARCH
+        const searcher = new FuzzySearch(this.state.events, ['name'], {
+            caseSensitive: false,
+        });
+        return searcher.search(query);
+    }
+
+    getEventResults(query){
+        fetch('http://localhost:8080/events/' + query)
             .then(results => results.json())
             .then(response => {
-                const users = response.results;
-                this.setState({ users });
+                this.setState((prevState, props) => {
+                    return { events: response };
+                });
             });
     }
 
     getEvents(){
-
+        fetch('http://localhost:8080/events')
+        .then(results => results.json())
+        .then(response => {
+            this.setState((prevState, props) => {
+                return { events: response };
+            });
+        });
     }
 
-    itemValueRenderer(t){
-        return t
+    getEventsStream(){
+        let evtSource = new EventSource("http://localhost:8080/stream/events");
+        evtSource.onmessage = function (event) {
+            console.log(JSON.parse(event.data));
+        }
     }
-    itemRenderer(t){
-        return t
-    }
-    onItemSelect(){
 
+    inputValueRenderer(event){
+        return event.name + " - " + TMUtils.formatDate(event.date)
+    }
+    itemRenderer(event, { handleClick, modifiers, query }){
+
+        let itemText = event.name + " - " + TMUtils.formatDate(event.date)
+        return (
+            <MenuItem
+                // active={modifiers.active}
+                label={event.name}
+                key={event.id}
+                onClick={handleClick}
+                text={itemText}
+            />
+        );
+    }
+    // formatDate(date) {
+    //     return (new Date(Date.parse(date))).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+    // }
+
+    getVenue(venueID){
+        fetch('http://localhost:8080/venue/' + venueID)
+            .then(results => results.json())
+            .then(response => {
+                this.setState((prevState, props) => {
+                    return { events: response };
+                });
+            });
     }
 
     render() {
+        let rightElement = <Button minimal={true}  rightIcon={"arrow-right"}/>
         return (
-            <div>
-                <InputGroup leftIcon={"search"}
-                            rightElement={<Button minimal={true}  rightIcon={"arrow-right"}/>}
-                            placeholder={"Search for an Event"}
-                />
                 <Suggest
-                    inputValueRenderer={this.itemValueRenderer}
+                    inputProps={ {
+                        leftIcon: "search",
+                        rightElement: rightElement,
+                        placeholder:"Search for an Event" ,
+                        style: { width: "100%"}
+                    } }
+                    popoverProps={ {usePortal: false, position: "top"} }
+                    inputValueRenderer={this.inputValueRenderer}
                     itemRenderer={this.itemRenderer}
                     items={this.state.events}
-                    onItemSelect={this.onItemSelect}
+                    onItemSelect={this.props.onEventSelect}
+                    itemListPredicate={this.itemListPredicate}
+
                 />
-            </div>
 
         );
     }

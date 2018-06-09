@@ -21,3 +21,82 @@ a.rL {
     grid-template-columns: 1fr;
     padding: 200px;
 }
+
+
+/*SEARCH RESULT WIDTHS*/
+.pt-popover-wrapper{
+    display: block;
+}
+.pt-popover, .pt-transition-container{
+    width: 100%;
+}
+
+/*SEAT MAP*/
+.seatMap{
+    display:grid;
+    grid-gap: 12px;
+}
+.pt-card.seatCard{
+    padding:4px;
+    text-align: center;
+    background-color: #0D8050;
+    animation: all 2s infinite;
+}
+.pt-card.seatCard div{
+    font-size:12px;
+}
+
+.pt-card.seatCard.reserved{
+    background-color: #a82a2a70;
+}
+.pt-card.seatCard.reserved:hover{
+    cursor: default;
+}
+
+.pt-card.seatCard.unreserved{
+}
+.pt-card.seatCard.unreserved:hover{
+    transform: scale(1.2);
+    background-color: #0A6640;
+}
+
+.pt-card.seatCard.hold{
+    background-color: #2B95D6;
+    transform: scale(1.2);
+}
+.pt-card.seatCard.hold:hover{
+}
+
+.pt-card.seatCard.recommended{
+    animation: pulse 2s infinite;
+}
+
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(50, 164, 66, 0.4);
+    }
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    }
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    }
+}
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(50, 164, 66, 0.4);
+        box-shadow: 0 0 0 0 rgba(50, 164, 66, 0.4);
+    }
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+        box-shadow: 0 0 0 10px rgba(204,169,44, 0);
+    }
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+        box-shadow: 0 0 0 0 rgba(204,169,44, 0);
+    }
+}
+
+
+

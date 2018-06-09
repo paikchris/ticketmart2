@@ -7,6 +7,8 @@ import { NavigationBar } from "./components/NavigationBar.js";
 import BrowserRouter from "react-router-dom/es/BrowserRouter";
 import Switch from "react-router-dom/es/Switch";
 import {SearchBar} from "./components/home/SearchBar";
+import {EventDetailContainer} from "./components/home/EventDetail";
+import {HomeContainer} from "./components/home/Home";
 
 
 class App extends Component {
@@ -18,7 +20,7 @@ class App extends Component {
                     <div className="bodyContainer">
                         <Switch>
                         </Switch>
-                        <SearchBar/>
+                        <HomeContainer/>
                     </div>
                 </div>
             </BrowserRouter>

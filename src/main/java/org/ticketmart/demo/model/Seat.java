@@ -2,6 +2,7 @@ package org.ticketmart.demo.model;
 
 import org.springframework.data.annotation.Id;
 
+import java.util.Comparator;
 import java.util.Date;
 
 public class Seat {
@@ -27,4 +28,7 @@ public class Seat {
                 "Seat[id=%s, venueID='%s', row='%s', number='%s']",
                 id, venueID, row, number);
     }
+
+
+
 }

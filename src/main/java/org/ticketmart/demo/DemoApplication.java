@@ -1,15 +1,21 @@
 package org.ticketmart.demo;
 
 import com.github.javafaker.Faker;
-import com.github.javafaker.University;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.MediaType;
+import org.springframework.web.reactive.function.client.WebClient;
 import org.ticketmart.demo.model.*;
+import org.ticketmart.demo.model.repositories.*;
 import org.ticketmart.demo.services.EventService;
+import reactor.core.publisher.Flux;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -42,7 +48,7 @@ public class DemoApplication implements CommandLineRunner {
         SpringApplication.run(DemoApplication.class, args);
 
         TestClient gwc = new TestClient();
-        System.out.println(gwc.getResult());
+//        System.out.println(gwc.getResult());
     }
 
     @Override
@@ -52,14 +58,28 @@ public class DemoApplication implements CommandLineRunner {
         //export
         //mongoexport -d test -c collection -o ./mongo.json
 
-        List <Ticket> tickets =  eventService.findAvailableTickets(getRandomEventID());
-        System.out.println(tickets.size());
+//        List <Ticket> tickets =  eventService.findAvailableTickets(getRandomEventID());
+//        System.out.println(tickets.size());
 
-        for (Ticket t: tickets
-             ) {
-            System.out.println(t.seatID);
-        }
+//        for (Ticket t: tickets
+//             ) {
+//            System.out.println(t.seatID);
+//        }
 
+        testGetAllTweets();
+
+    }
+
+    public void testGetAllTweets() {
+        System.out.println("TESTING REACTIVE");
+
+        WebClient gwc = WebClient.create("http://localhost:8080");
+        Flux<Event> result = gwc.get()
+                .uri("/stream/events").accept(MediaType.TEXT_EVENT_STREAM)
+                .retrieve()
+                .bodyToFlux(Event.class);
+
+        System.out.println(result);
     }
 
     private void bootstrapDatabase() {
@@ -145,7 +165,6 @@ public class DemoApplication implements CommandLineRunner {
     private void createEvents(){
         System.out.println("CREATING EVENTS...");
         int count = 0;
-
         for (int j = 0; j < numEvents; j++) {
             count++;
             eventRepo.save(new Event( faker.esports().event(), faker.date().future(365, TimeUnit.DAYS), getRandomVenueID()));
@@ -170,15 +189,16 @@ public class DemoApplication implements CommandLineRunner {
                 for (int r = 0; r < venue.seatRows; r++) {
                     for (int n = 0; n < venue.seatNumbers; n++) {
                         //find seatID
-                        List<Seat> seatsMatch = seatRepo.findByVenueIDAndRowAndNumber(venue.id, getRowLetterFromInt(r), Integer.toString(n) );
+                        Seat seatMatch = seatRepo.findByVenueIDAndRowAndNumber(venue.id, getRowLetterFromInt(r), Integer.toString(n) );
                         //random reserved true or false
 
                         count[0]++;
                         tickets.add(new Ticket(e.id,
                                 getRandomUserID(),
                                 Integer.toString(faker.number().numberBetween(10, 4000)),
-                                seatsMatch.get(0).id,
-                                faker.random().nextBoolean()
+                                seatMatch.id,
+                                faker.random().nextBoolean(),
+                                false
                         ));
                     }
                 }

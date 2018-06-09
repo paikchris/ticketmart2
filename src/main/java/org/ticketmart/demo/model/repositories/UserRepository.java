@@ -1,6 +1,7 @@
-package org.ticketmart.demo.model;
+package org.ticketmart.demo.model.repositories;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.ticketmart.demo.model.User;
 
 import java.util.List;
 
