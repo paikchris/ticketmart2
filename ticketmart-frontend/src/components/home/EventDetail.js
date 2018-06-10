@@ -16,15 +16,18 @@ export class EventDetailContainer extends React.Component {
         this.state = {
             heldTickets: {},
             subTotal: 0,
+            redirectTo: null,
+            rowNumSeatIDMap: {}
+
         };
 
         this.addTicketHold = this.addTicketHold.bind(this);
         this.removeTicketHold = this.removeTicketHold.bind(this);
         this.getHeldSeatsDisplayString = this.getHeldSeatsDisplayString.bind(this);
-
+        this.onHoldSeatsButtonClick = this.onHoldSeatsButtonClick.bind(this);
     }
 
-    addTicketHold(ticketObj){
+    addTicketHold(ticketObj, seatRowNum){
         this.setState((prevState, props) => {
             //update subtotal first
             let subTotal = parseFloat(prevState.subTotal) + parseFloat(ticketObj.price)
@@ -33,7 +36,11 @@ export class EventDetailContainer extends React.Component {
             let heldTickets = prevState.heldTickets
             heldTickets[ticketObj.id] = ticketObj
 
-            return { heldTickets: heldTickets, subTotal: subTotal.toFixed(2) };
+            //update map
+            let rowNumMap = prevState.rowNumSeatIDMap
+            rowNumMap[ticketObj.seatID] = seatRowNum
+
+            return { heldTickets: heldTickets, subTotal: subTotal.toFixed(2), rowNumSeatIDMap: rowNumMap };
         });
     }
     removeTicketHold(ticketObj){
@@ -45,8 +52,12 @@ export class EventDetailContainer extends React.Component {
             let heldTickets = prevState.heldTickets
             heldTickets[ticketObj.id] = undefined
 
+            //update map
+            let rowNumMap = prevState.rowNumSeatIDMap
+            rowNumMap[ticketObj.seatID] = undefined
 
-            return { heldTickets: heldTickets, subTotal: subTotal.toFixed(2) };
+
+            return { heldTickets: heldTickets, subTotal: subTotal.toFixed(2), rowNumSeatIDMap: rowNumMap };
         });
     }
 
@@ -72,10 +83,38 @@ export class EventDetailContainer extends React.Component {
         // })
     }
 
+    onHoldSeatsButtonClick(event){
+        let ticketIDKeys = Object.keys(this.state.heldTickets)
+        let currentState = this.state
+        let currentProps = this.props
+        ticketIDKeys.forEach(function(ticketID) {
+            console.log(ticketID);
+
+
+            fetch('http://localhost:8080/seat/hold/' + ticketID, {method: 'POST'})
+                .then(results => results.json())
+                .then(response => {
+                    console.log("HOLD TICKET RESPONSE")
+                    console.log(response);
+                    // let indexProps = {
+                    //     "tickets": this.state.heldTickets
+                    // }
+                    console.log("SENDING INDEX PROPS")
+                    currentState.holdStartTime = response.holdStartTime
+                    console.log(currentState)
+                    currentProps.changePageIndex("ticket", currentState)
+                });
+        });
+
+        
+    }
+
 
     render() {
         let detailComponent = ""
         if(this.props.event && this.props.venue && this.props.seatTicketMap){
+            console.log("HELD TICKETS")
+            console.log(Object.keys(this.state.heldTickets).length)
             detailComponent = (
                 <div>
                     <h1>{this.props.event.name}</h1>
@@ -92,9 +131,10 @@ export class EventDetailContainer extends React.Component {
                         removeTicketHold={this.removeTicketHold}
                     />
                     <Button
-                        disabled={true}
+                        disabled={ Object.keys(this.state.heldTickets).length > 0 ? false :true}
                         text={"Hold Seats"}
                         intent={"primary"}
+                        onClick={this.onHoldSeatsButtonClick}
                     />
 
 
@@ -117,31 +157,43 @@ export class SeatMap extends React.Component {
         this.state = {
         };
 
-        // this.getAvailableTickets = this.getAvailableTickets.bind(this);
+        this.filterOutReservedSeats = this.filterOutReservedSeats.bind(this);
     }
     componentDidMount(){
+    }
+
+    filterOutReservedSeats(recommendedSeatsArray, seatTicketMap){
+        //filter out reserved seats
+
+        return recommendedSeatsArray.filter( seatLetterNum => {
+            if(seatTicketMap[seatLetterNum].reserved === false){
+                return true;
+            }
+            else{
+                return false;
+            }
+        })
     }
 
 
     render() {
         let seatMapElement = "";
-        if(this.props.seatTicketMap && this.props.seatRank){
+        if( this.props.seatTicketMap && this.props.seatRank ){
             let seatTicketMap = this.props.seatTicketMap;
+            let seatKeys = Object.keys(seatTicketMap);
             let seatRankArray = this.props.seatRank;
-            let recommendedSeatsArray = seatRankArray.slice(0, Math.round(seatRankArray.length * .1))
 
-            let seatKeys = Object.keys(seatTicketMap).sort();
-
-
+            let recommendedSeatsArray = []
+            if(seatRankArray.length === seatKeys.length){
+                recommendedSeatsArray = this.filterOutReservedSeats(seatRankArray, seatTicketMap).slice(0, Math.round(seatRankArray.length * .1))
+            }
 
             seatMapElement = seatKeys.map((seatRowNum) =>
-
                 <SeatCard
                     ticketObj={seatTicketMap[seatRowNum]}
                     reserved={seatTicketMap[seatRowNum].reserved}
                     recommended={ recommendedSeatsArray.includes(seatRowNum) }
                     className={"seatCard"}
-                    // className={seatTicketMap[seatRowNum] ? "seatCard reserved" : "seatCard unreserved recommended"}
                     key={seatRowNum}
                     interactive={seatTicketMap[seatRowNum].reserved ? false : true}
                     elevation={seatTicketMap[seatRowNum].reserved ? 0 : 2}
@@ -173,6 +225,7 @@ export class SeatCard extends React.Component {
             hold: false,
             recommended: this.props.recommended,
             reserved: this.props.reserved,
+            rowNum: this.props.seatRowNum,
         };
 
         this.onSeatClick = this.onSeatClick.bind(this);
@@ -182,7 +235,7 @@ export class SeatCard extends React.Component {
         if(this.state.reserved === false){
             this.setState((prevState, props) => {
                 if(prevState.hold === false){
-                    props.addTicketHold(prevState.ticketObj)
+                    props.addTicketHold(prevState.ticketObj, this.state.rowNum)
                     return { hold: true };
                 }
                 else{

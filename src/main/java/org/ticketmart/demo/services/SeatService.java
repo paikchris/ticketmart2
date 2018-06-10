@@ -12,6 +12,10 @@ import org.ticketmart.demo.model.repositories.TicketRepository;
 import org.ticketmart.demo.model.repositories.VenueRepository;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +30,8 @@ public class SeatService {
     EventRepository eventRepository;
 
     final float topNPercentile = .1f;
+
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(10);
 
     /**
      * The number of capacity in the venue that are neither held nor reserved
@@ -185,5 +191,11 @@ public class SeatService {
         return Comparator.comparing(
                 ticket -> getTicketDistanceFromPoint(midX, frontY, ticket)
         );
+    }
+
+    public void seatHoldTimer(){
+        ScheduledFuture<?> future = scheduler.schedule(() -> {
+            // Your code here
+        }, 10, TimeUnit.SECONDS);
     }
 }

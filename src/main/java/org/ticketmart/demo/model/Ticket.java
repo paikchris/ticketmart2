@@ -14,6 +14,7 @@ public class Ticket {
     public String seatID;
     public boolean reserved;
     public boolean hold;
+    public Date holdStartTime;
 
     public Ticket() {
     }
@@ -30,7 +31,7 @@ public class Ticket {
     @Override
     public String toString() {
         return String.format(
-                "Ticket[id=%s, eventID='%s', date='%s', venueID='%s', seatID='%s', reserved='%s']",
+                "Ticket[id=%s, eventID='%s', date='%s', venueID='%s', seatID='%s', reserved='%s, hold='%s, holdStartTime='%s']",
                 id, eventID, userID, price, seatID, reserved, hold);
     }
 }

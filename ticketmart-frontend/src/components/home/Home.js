@@ -7,6 +7,7 @@ import {MenuItem} from "@blueprintjs/core/lib/cjs/components/menu/menuItem";
 import * as FuzzySearch from "fuzzy-search";
 import {SearchBar} from "./SearchBar";
 import {EventDetailContainer} from "./EventDetail";
+import {TicketCheckout} from "./TicketCheckout";
 
 export class HomeContainer extends React.Component {
     constructor(props) {
@@ -17,6 +18,8 @@ export class HomeContainer extends React.Component {
             availableTickets: null,
             seatTicketMap: null,
             seatRank: null,
+            index: "search",
+            indexProps: {}
         };
 
         this.onEventSelect = this.onEventSelect.bind(this);
@@ -24,6 +27,8 @@ export class HomeContainer extends React.Component {
         this.getAvailableTickets = this.getAvailableTickets.bind(this);
         this.getSeatMap = this.getSeatMap.bind(this);
         this.getSeatRank = this.getSeatRank.bind(this);
+        this.changePageIndex = this.changePageIndex.bind(this);
+
     }
 
     onEventSelect(event){
@@ -33,7 +38,15 @@ export class HomeContainer extends React.Component {
         this.getSeatMap(event.id)
         this.getSeatRank(event.venueID)
         this.setState((prevState, props) => {
-            return { event: event };
+            return { event: event, index: "event" };
+        });
+    }
+
+    changePageIndex(indexString, indexProps){
+        console.log("SETTING INDEX PROPS")
+        console.log(indexProps)
+        this.setState((prevState, props) => {
+            return { index: indexString, indexProps: indexProps };
         });
     }
 
@@ -76,7 +89,6 @@ export class HomeContainer extends React.Component {
             });
     }
 
-
     getEventsStream(){
         let evtSource = new EventSource("http://localhost:8080/stream/events");
         evtSource.onmessage = function (event) {
@@ -86,16 +98,32 @@ export class HomeContainer extends React.Component {
 
     render() {
         let rightElement = <Button minimal={true}  rightIcon={"arrow-right"}/>
+        let bodyElement = ""
+
+        if(this.state.index === "event"){
+            bodyElement = <EventDetailContainer
+                event={this.state.event}
+                venue={this.state.venue}
+                availableTickets={this.state.availableTickets}
+                seatTicketMap={this.state.seatTicketMap}
+                seatRank={this.state.seatRank}
+                changePageIndex={this.changePageIndex}
+            />
+        }
+        else if(this.state.index === "ticket"){
+            console.log("BUILDING TICKET COMPONENT")
+            console.log(this.state.indexProps)
+            bodyElement = (
+                <TicketCheckout
+                    {...this.state.indexProps}
+                    // props={this.state.indexProps}
+                />)
+        }
+
         return (
             <div>
                 <SearchBar onEventSelect={this.onEventSelect}/>
-                <EventDetailContainer
-                    event={this.state.event}
-                    venue={this.state.venue}
-                    availableTickets={this.state.availableTickets}
-                    seatTicketMap={this.state.seatTicketMap}
-                    seatRank={this.state.seatRank}
-                />
+                {bodyElement}
             </div>
 
         );

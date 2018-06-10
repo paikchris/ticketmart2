@@ -20,6 +20,7 @@ import org.ticketmart.demo.model.repositories.EventRepository;
 import org.ticketmart.demo.model.repositories.VenueRepository;
 import org.ticketmart.demo.services.EventService;
 import org.ticketmart.demo.services.SeatService;
+import org.ticketmart.demo.services.TicketService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -41,6 +42,8 @@ public class DemoController {
     EventService eventService;
     @Autowired
     SeatService seatService;
+    @Autowired
+    TicketService ticketService;
 
     SimpleDateFormat displayDateFormate = new SimpleDateFormat("MM-dd-yyyy");
 
@@ -98,6 +101,11 @@ public class DemoController {
     @GetMapping("/seat/rank/{venueID}")
     public Mono<List<String>> seatRank(@PathVariable(value = "venueID") String venueID) throws Exception {
         return Mono.just(seatService.getRankedSeatsRowNum(venueID));
+    }
+
+    @PostMapping("/seat/hold/{ticketID}")
+    public Mono<Ticket> holdTicket(@PathVariable(value = "ticketID") String ticketID) {
+        return Mono.just(ticketService.holdTicket(ticketID));
     }
 
 
