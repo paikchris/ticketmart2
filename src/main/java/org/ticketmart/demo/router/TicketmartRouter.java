@@ -14,8 +14,7 @@ public class TicketmartRouter {
 
     @Bean
     public RouterFunction<ServerResponse> route(DemoController greetingHandler) {
-
         return RouterFunctions
-                .route(RequestPredicates.GET("/hello").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), greetingHandler::hello);
+                .route(RequestPredicates.GET("/index").and(RequestPredicates.accept(MediaType.TEXT_PLAIN)), greetingHandler::index);
     }
 }

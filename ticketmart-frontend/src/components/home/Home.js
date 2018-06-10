@@ -116,6 +116,7 @@ export class HomeContainer extends React.Component {
             bodyElement = (
                 <TicketCheckout
                     {...this.state.indexProps}
+                    changePageIndex={this.changePageIndex}
                     // props={this.state.indexProps}
                 />)
         }

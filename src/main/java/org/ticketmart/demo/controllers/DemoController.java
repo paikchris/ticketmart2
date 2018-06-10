@@ -4,29 +4,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import org.ticketmart.demo.model.Event;
-import org.ticketmart.demo.model.Seat;
 import org.ticketmart.demo.model.Ticket;
 import org.ticketmart.demo.model.Venue;
 import org.ticketmart.demo.model.reactive.EventReactiveRepository;
 import org.ticketmart.demo.model.reactive.VenueReactiveRepository;
-import org.ticketmart.demo.model.repositories.EventRepository;
-import org.ticketmart.demo.model.repositories.VenueRepository;
 import org.ticketmart.demo.services.EventService;
 import org.ticketmart.demo.services.SeatService;
 import org.ticketmart.demo.services.TicketService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -45,9 +39,7 @@ public class DemoController {
     @Autowired
     TicketService ticketService;
 
-    SimpleDateFormat displayDateFormate = new SimpleDateFormat("MM-dd-yyyy");
-
-    public Mono<ServerResponse> hello(ServerRequest request) {
+    public Mono<ServerResponse> index(ServerRequest request) {
         return ServerResponse.ok().contentType(MediaType.TEXT_PLAIN)
                 .body(BodyInserters.fromObject("Hello, Spring!"));
     }
@@ -57,7 +49,8 @@ public class DemoController {
     public Flux<Event> getAllEvents() {
         return eventReactiveRepository.findAll();
     }
-    // Events are Sent to the client as Server Sent Events
+
+    // Events are Sent to the client as Server Sent Events.
     @GetMapping(value = "/stream/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public Flux<Event> streamAllEvents() {
         return eventReactiveRepository.findAll();
@@ -107,11 +100,14 @@ public class DemoController {
     public Mono<Ticket> holdTicket(@PathVariable(value = "ticketID") String ticketID) {
         return Mono.just(ticketService.holdTicket(ticketID));
     }
+    @PostMapping("/seat/reserve/{ticketID}")
+    public Mono<Ticket> reserveTicket(@PathVariable(value = "ticketID") String ticketID) {
+        return Mono.just(ticketService.reserveTicket(ticketID));
+    }
 
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public class ResourceNotFoundException extends RuntimeException {
-
         public ResourceNotFoundException(String exception) {
             super(exception);
         }

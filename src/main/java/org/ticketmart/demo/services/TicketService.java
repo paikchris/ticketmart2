@@ -25,11 +25,9 @@ public class TicketService {
     @Autowired
     VenueRepository venueRepository;
 
-
     static final long HOLD_TIME_IN_MIN = 15 ;
 
     ScheduledThreadPoolExecutor scheduler = new ScheduledThreadPoolExecutor(5);
-
 
     public Ticket holdTicket(String ticketID){
         Ticket ticket = new Ticket();
@@ -48,31 +46,6 @@ public class TicketService {
         }
 
         return ticket;
-    }
-
-    public boolean releaseTicketHold(String ticketID){
-        try {
-            Ticket ticket = ticketRepository.findById(ticketID).orElseThrow(Exception::new);
-            ticket.hold = false;
-            ticket.holdStartTime = null;
-            ticketRepository.save(ticket);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
-    }
-
-    public Runnable getReleaseTickeHoldRunnable( Ticket ticket ){
-        return new Runnable() {
-            @Override
-            public void run() {
-                ticket.hold = false;
-                ticket.holdStartTime = null;
-                ticketRepository.save(ticket);
-            }
-        };
     }
 
     public void startTicketHoldTimer(Ticket ticket){
@@ -101,9 +74,15 @@ public class TicketService {
 
     }
 
-
-
-
-
-
+    public Ticket reserveTicket(String ticketID){
+        Ticket ticket = new Ticket();
+        try {
+            ticket = ticketRepository.findById(ticketID).orElseThrow(Exception::new);
+            ticket.reserved = true;
+            ticketRepository.save(ticket);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ticket;
+    }
 }

@@ -14,33 +14,33 @@ export class TicketCheckout extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            tickets: this.props.heldTickets,
             holdStartTime: this.props.holdStartTime,
             holdTimeRemaining: "",
+            inProgress: true,
         };
         console.log("TICKET CONST")
         console.log(props)
 
 
         this.getStartTime = this.getStartTime.bind(this);
-        this.updateHoldtime = this.updateHoldtime.bind(this);
+        this.updateHoldTime = this.updateHoldTime.bind(this);
+        this.onReserveButtonClick = this.onReserveButtonClick.bind(this);
     }
-    // componentDidMount(){
-    //     setInterval(this.updateHoldtime, 1000);
-    // }
 
     getStartTime(){
         let ticketKeys = Object.keys(this.props.heldTickets)
         return this.props.heldTickets[ticketKeys[0]].holdStartTime
     }
 
-    updateHoldtime(){
+    updateHoldTime(){
         console.log("STATE: START TIME")
         console.log(this.state.holdStartTime)
         var start = new Date(this.state.holdStartTime);
         var end = new Date(start.getTime() + 15 *60000);
         var now = new Date();
         // var timeDiff = Math.abs(now.getTime() - end.getTime());
-        var timeDiff = dateDiff(now, end)
+        var timeDiff = TMUtils.dateDiff(now, end)
 
         var secDiff = timeDiff / 1000; //in s
         var minDiff = timeDiff / 60 / 1000; //in minutes
@@ -53,16 +53,33 @@ export class TicketCheckout extends React.Component {
         console.log("NOW DATE: " + now.toString())
         console.log(timeDiff)
 
-        return (millisToMinutesAndSeconds(timeDiff))
-
-        //
+        return (TMUtils.millisToMinutesAndSeconds(timeDiff))
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.setState({ holdTimeRemaining : this.updateHoldtime() }), 1000);
+        if(this.state.inProgress === true){
+            this.interval = setInterval(() => this.setState({ holdTimeRemaining : this.updateHoldTime() }), 1000);
+        }
     }
+
     componentWillUnmount() {
         clearInterval(this.interval);
+    }
+
+    onReserveButtonClick(){
+        let completeFunction = this.props.changePageIndex
+        let ticketIDKeys = Object.keys(this.state.tickets)
+        ticketIDKeys.forEach(function(ticketID) {
+            fetch('http://localhost:8080/seat/reserve/' + ticketID, {method: 'POST'})
+                .then(results => results.json())
+                .then(response => {
+                    console.log("RESERVE TICKET RESPONSE")
+                    console.log(response);
+                    alert("RESERVED")
+
+                    completeFunction("home", {})
+                });
+        });
     }
 
     render(props) {
@@ -87,17 +104,13 @@ export class TicketCheckout extends React.Component {
                 <h4>Hold time remaining: {this.state.holdTimeRemaining}</h4>
                 <h2>{ticketTable}</h2>
                 <h3>Total: ${this.props.subTotal}</h3>
+                <Button
+                    text={"Reserve Seats"}
+                    intent={"primary"}
+                    onClick={this.onReserveButtonClick}
+                />
             </div>
         );
     }
 }
 
-function dateDiff(date1, date2) {
-    return Math.abs(date1.getTime() - date2.getTime());
-}
-
-function millisToMinutesAndSeconds(millis) {
-    var minutes = Math.floor(millis / 60000);
-    var seconds = ((millis % 60000) / 1000).toFixed(0);
-    return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
-}

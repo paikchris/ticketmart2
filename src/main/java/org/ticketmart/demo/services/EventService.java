@@ -22,24 +22,12 @@ public class EventService {
     @Autowired
     SeatRepository seatRepository;
 
-
-    public List<Event> findAll(){
-        return eventRepository.findAll();
-    }
-
-
     public List<Ticket> findAvailableTickets(String eventID){
         Optional<Event> event = eventRepository.findById(eventID);
-
 
         List <Ticket> availableTickets = ticketRepository.findByEventIDAndReserved( event.orElse(new Event()).id, false);
 
         return availableTickets;
     }
 
-    public List<Event> holdTickets(){
-        //need event id, which gives us venue id, which gives us seat id
-
-        return eventRepository.findAll();
-    }
 }

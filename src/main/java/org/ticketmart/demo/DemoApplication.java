@@ -12,10 +12,7 @@ import org.ticketmart.demo.model.repositories.*;
 import org.ticketmart.demo.services.EventService;
 import reactor.core.publisher.Flux;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -37,49 +34,19 @@ public class DemoApplication implements CommandLineRunner {
 
     Faker faker = new Faker(); //FOR TEST DATA
 
-    final int numUsers = 100;
-    final int numVenues = 20;
-    final int numEvents = 50;
-
-
+    final int numUsers = 5;
+    final int numVenues = 10;
+    final int numEvents = 10;
 
 
     public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
-
-        TestClient gwc = new TestClient();
-//        System.out.println(gwc.getResult());
     }
 
     @Override
     public void run(String... args) throws Exception {
-//        bootstrapDatabase();
+        bootstrapDatabase();
 
-        //export
-        //mongoexport -d test -c collection -o ./mongo.json
-
-//        List <Ticket> tickets =  eventService.findAvailableTickets(getRandomEventID());
-//        System.out.println(tickets.size());
-
-//        for (Ticket t: tickets
-//             ) {
-//            System.out.println(t.seatID);
-//        }
-
-        testGetAllTweets();
-
-    }
-
-    public void testGetAllTweets() {
-        System.out.println("TESTING REACTIVE");
-
-        WebClient gwc = WebClient.create("http://localhost:8080");
-        Flux<Event> result = gwc.get()
-                .uri("/stream/events").accept(MediaType.TEXT_EVENT_STREAM)
-                .retrieve()
-                .bodyToFlux(Event.class);
-
-        System.out.println(result);
     }
 
     private void bootstrapDatabase() {
@@ -90,8 +57,6 @@ public class DemoApplication implements CommandLineRunner {
         createEvents();
         createTickets();
     }
-
-
     private void clearDatabase(){
         userRepo.deleteAll();
         venueRepo.deleteAll();
@@ -216,8 +181,6 @@ public class DemoApplication implements CommandLineRunner {
 
         return alphabet.get(i);
     }
-
-
     private String getRandomUserID(){
         List<User> users = userRepo.findAll();
 
@@ -230,15 +193,5 @@ public class DemoApplication implements CommandLineRunner {
         List<Venue> venues = venueRepo.findAll();
         int randomIndex = faker.number().numberBetween(0, venues.size()-1);
         return venues.get(randomIndex).id;
-    }
-    private String getRandomEventID(){
-        List<Event> event = eventRepo.findAll();
-        int randomIndex = faker.number().numberBetween(0, event.size()-1);
-        return event.get(randomIndex).id;
-    }
-
-
-    private void generateReservedTickets(){
-
     }
 }
