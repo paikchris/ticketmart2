@@ -1,11 +1,9 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import {
     Navbar,
     NavbarDivider,
     NavbarGroup,
     NavbarHeading,
-    Button,
     Alignment
 } from "@blueprintjs/core";
 
@@ -18,24 +16,11 @@ export class NavigationBar extends React.Component {
         return (
             <Navbar>
                 <NavbarGroup align={Alignment.LEFT}>
-                    <Link className="rL" to="/">
-                        <NavbarHeading>{this.props.brandText}</NavbarHeading>
-                    </Link>
+                    <NavbarHeading>{this.props.brandText}</NavbarHeading>
                 </NavbarGroup>
                 <NavbarGroup align={Alignment.RIGHT}>
-                    <NavbarDivider />
-                    <Link className="rL" to="/">
-                        <Button className="pt-minimal" icon="home" text="Home" />
-                    </Link>
-                    <Link className="rL" to="/projects/index">
-                        <Button className="pt-minimal" icon="projects" text="Projects" />
-                    </Link>
 
-                    {/* <Button className="pt-minimal" icon="document" text="Cloud" /> */}
                     <NavbarDivider />
-                    <Button className="pt-minimal" icon="user" />
-                    <Button className="pt-minimal" icon="notifications" />
-                    <Button className="pt-minimal" icon="cog" />
                 </NavbarGroup>
             </Navbar>
         );

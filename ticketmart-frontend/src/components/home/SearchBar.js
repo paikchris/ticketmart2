@@ -1,6 +1,4 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {InputGroup} from "@blueprintjs/core";
 import {Button} from "@blueprintjs/core/lib/cjs/components/button/buttons";
 import {Suggest} from "@blueprintjs/select/lib/cjs/components/select/suggest";
 import {MenuItem} from "@blueprintjs/core/lib/cjs/components/menu/menuItem";
@@ -69,21 +67,16 @@ export class SearchBar extends React.Component {
         return event.name + " - " + TMUtils.formatDate(event.date)
     }
     itemRenderer(event, { handleClick, modifiers, query }){
-
         let itemText = event.name + " - " + TMUtils.formatDate(event.date)
         return (
             <MenuItem
-                // active={modifiers.active}
-                label={event.name}
                 key={event.id}
+                label={event.name}
                 onClick={handleClick}
                 text={itemText}
             />
         );
     }
-    // formatDate(date) {
-    //     return (new Date(Date.parse(date))).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-    // }
 
     getVenue(venueID){
         fetch('http://localhost:8080/venue/' + venueID)

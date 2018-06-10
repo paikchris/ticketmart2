@@ -1,12 +1,6 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {InputGroup} from "@blueprintjs/core";
 import {Button} from "@blueprintjs/core/lib/cjs/components/button/buttons";
-import {Suggest} from "@blueprintjs/select/lib/cjs/components/select/suggest";
-import {MenuItem} from "@blueprintjs/core/lib/cjs/components/menu/menuItem";
-import * as FuzzySearch from "fuzzy-search";
 import * as TMUtils from "./../../utils/TMUtils.js"
-import {Card} from "@blueprintjs/core/lib/cjs/components/card/card";
 
 
 
@@ -77,7 +71,7 @@ export class TicketCheckout extends React.Component {
                     console.log(response);
                     alert("RESERVED")
 
-                    completeFunction("home", {})
+                    completeFunction("search", {})
                 });
         });
     }
@@ -91,7 +85,7 @@ export class TicketCheckout extends React.Component {
             let seatIDMap = this.props.rowNumSeatIDMap
 
             ticketTable = Object.keys(heldTickets).map((ticketID) =>
-                <div>
+                <div key={ticketID}>
                     <span>{seatIDMap[heldTickets[ticketID].seatID]} - ${parseFloat(heldTickets[ticketID].price)}</span>
                 </div>
             )

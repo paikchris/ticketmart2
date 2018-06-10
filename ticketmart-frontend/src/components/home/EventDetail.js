@@ -1,10 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {InputGroup} from "@blueprintjs/core";
 import {Button} from "@blueprintjs/core/lib/cjs/components/button/buttons";
-import {Suggest} from "@blueprintjs/select/lib/cjs/components/select/suggest";
-import {MenuItem} from "@blueprintjs/core/lib/cjs/components/menu/menuItem";
-import * as FuzzySearch from "fuzzy-search";
 import * as TMUtils from "./../../utils/TMUtils.js"
 import {Card} from "@blueprintjs/core/lib/cjs/components/card/card";
 
@@ -60,29 +55,11 @@ export class EventDetailContainer extends React.Component {
             return { heldTickets: heldTickets, subTotal: subTotal.toFixed(2), rowNumSeatIDMap: rowNumMap };
         });
     }
-
-    updateHeldTickets(event){
-        //UPDATE STATE
-
-
-        /*
-        really updating held tickets, send update with ticketID to server
-
-        public String ticketid;
-        public String eventID;
-        public String userID;
-        public String price;
-        public String seatID;
-        public boolean reserved;
-         */
-    }
-
     getHeldSeatsDisplayString(){
         // Object.keys(this.state.heldTickets).forEach(function(ticketID){
         //     this.state.heldTickets[ticketID].
         // })
     }
-
     onHoldSeatsButtonClick(event){
         let ticketIDKeys = Object.keys(this.state.heldTickets)
         let currentState = this.state

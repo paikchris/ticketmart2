@@ -1,10 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import {InputGroup} from "@blueprintjs/core";
 import {Button} from "@blueprintjs/core/lib/cjs/components/button/buttons";
-import {Suggest} from "@blueprintjs/select/lib/cjs/components/select/suggest";
-import {MenuItem} from "@blueprintjs/core/lib/cjs/components/menu/menuItem";
-import * as FuzzySearch from "fuzzy-search";
 import {SearchBar} from "./SearchBar";
 import {EventDetailContainer} from "./EventDetail";
 import {TicketCheckout} from "./TicketCheckout";
