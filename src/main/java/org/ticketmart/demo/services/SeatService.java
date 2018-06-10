@@ -63,9 +63,6 @@ public class SeatService {
 
             ticketMap.put( seatRowNum, t);
 
-
-
-
         }
 
         return ticketMap;

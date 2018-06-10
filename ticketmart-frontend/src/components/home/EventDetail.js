@@ -180,7 +180,7 @@ export class SeatMap extends React.Component {
         let seatMapElement = "";
         if( this.props.seatTicketMap && this.props.seatRank ){
             let seatTicketMap = this.props.seatTicketMap;
-            let seatKeys = Object.keys(seatTicketMap);
+            let seatKeys = Object.keys(seatTicketMap).sortAlphaNum();
             let seatRankArray = this.props.seatRank;
 
             let recommendedSeatsArray = []

@@ -31,7 +31,7 @@ public class Ticket {
     @Override
     public String toString() {
         return String.format(
-                "Ticket[id=%s, eventID='%s', date='%s', venueID='%s', seatID='%s', reserved='%s, hold='%s, holdStartTime='%s']",
+                "Ticket[id=%s, eventID='%s', date='%s', venueID='%s', seatID='%s', reserved='%s, hold='%s']",
                 id, eventID, userID, price, seatID, reserved, hold);
     }
 }
